@@ -1,0 +1,3 @@
+promptToReturnFromSubprocess: true
+os:
+  # editCommandTemplate: '{{editor}} {{filename}}'
