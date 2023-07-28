@@ -1,3 +1,4 @@
 promptToReturnFromSubprocess: true
 os:
-  # editCommandTemplate: '{{editor}} {{filename}}'
+  editCommand: "$LAZYGIT_EDITOR"
+  editCommandTemplate: "{{editor}} {{filename}} {{line}}"
