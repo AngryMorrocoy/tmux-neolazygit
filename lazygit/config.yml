@@ -1,4 +1,4 @@
-promptToReturnFromSubprocess: true
+promptToReturnFromSubprocess: false
 os:
   editCommand: "$LAZYGIT_EDITOR"
   editCommandTemplate: "{{editor}} {{filename}} {{line}}"

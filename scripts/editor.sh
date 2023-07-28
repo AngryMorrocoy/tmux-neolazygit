@@ -7,8 +7,6 @@
 FILENAME=$1
 LINE=${2:-0}
 
-# echo "Origin: $LAZYGIT_ORIGIN_PANE"
-
 # Check if there's a nvim instance in the origin pane and 'returns' its server socket,
 # otherwise returns 0
 get_nvim_socket () {
@@ -38,9 +36,16 @@ get_nvim_socket () {
     echo $nvim_socket
 }
 
+focus_nvim() {
+    local origin_window=$(tmux list-panes -sF "#I" -f "#{m:#D,${LAZYGIT_ORIGIN_PANE}}")
+
+    tmux selectw -t $origin_window
+    tmux selectp -t $LAZYGIT_ORIGIN_PANE
+}
+
 
 main() {
-    socket=$(get_nvim_socket)
+    local socket=$(get_nvim_socket)
     # If no socket, it means no nvim, so just open inside lazygit ;)
     if [[ $socket == 0 ]]; then
         nvim +$LINE "$FILENAME"
@@ -51,7 +56,7 @@ main() {
     nvim --server "$socket" --remote "$FILENAME"
     nvim --server "$socket" --remote-send "<ESC>${LINE}gg"
 
-    # Focus the tmux pane
+    focus_nvim
 }
 
 main
