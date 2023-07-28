@@ -46,6 +46,12 @@ main() {
         nvim +$LINE "$FILENAME"
         exit 0
     fi
+
+    # Opens the file remotely in the expected line
+    nvim --server "$socket" --remote "$FILENAME"
+    nvim --server "$socket" --remote-send "<ESC>${LINE}gg"
+
+    # Focus the tmux pane
 }
 
 main
