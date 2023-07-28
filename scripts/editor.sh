@@ -53,7 +53,7 @@ main() {
     fi
 
     # Opens the file remotely in the expected line
-    nvim --server "$socket" --remote "$FILENAME"
+    nvim --server "$socket" --remote "$(realpath "$FILENAME")"
     nvim --server "$socket" --remote-send "<ESC>${LINE}gg"
 
     focus_nvim
