@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CUSTOM_LAZYGIT_CONFIG="$CURRENT_DIR/../lazygit/config.yml"
 
