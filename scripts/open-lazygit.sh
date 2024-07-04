@@ -14,7 +14,7 @@ openLazygit () {
         -e LAZYGIT_EDITOR=$LAZYGIT_EDITOR \
         -e LAZYGIT_ORIGIN_PANE=$LAZYGIT_ORIGIN_PANE \
         lazygit \
-        -ucf $LAZYGIT_CONFIG,$CUSTOM_LAZYGIT_CONFIG
+        -ucf "$LAZYGIT_CONFIG,$CUSTOM_LAZYGIT_CONFIG"
 }
 
 openLazygit
