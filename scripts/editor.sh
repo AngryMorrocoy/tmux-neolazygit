@@ -18,22 +18,23 @@ get_nvim_socket () {
         return
     fi
 
-    # Gets nvim pid on the pane of origin
-    nvim_pid=$(pgrep -P "$pid_of_origin" vim)
+    # Gets all "nvim" processes running in the pane of origin
+    NVIM_PIDS=$(pstree -paT $pid_of_origin | \
+        grep -E .\+nvim, | \
+        cut -d, -f2 | \
+        cut -d" " -f1)
 
-    if [ -z $nvim_pid ]; then
-        echo 0
-        return
-    fi
+    # Find the first PID that has an nvim socket assigned
+    for nvim_pid in $NVIM_PIDS; do
+        nvim_socket=$(ls ${XDG_RUNTIME_DIR}/nvim* 2>/dev/null | grep $nvim_pid)
+        # Returns the found socket
+        if [ ! -z $nvim_socket  ]; then
+            echo $nvim_socket
+            return
+        fi
+    done
 
-    nvim_socket=$(ls ${XDG_RUNTIME_DIR}/nvim* 2>/dev/null | grep $nvim_pid)
-
-    if [ -z $nvim_socket ]; then
-        echo 0
-        return
-    fi
-
-    echo $nvim_socket
+    echo 0
 }
 
 focus_nvim() {
@@ -52,11 +53,11 @@ main() {
         exit 0
     fi
 
+    focus_nvim
+
     # Opens the file remotely in the expected line
     nvim --server "$socket" --remote "$(realpath "$FILENAME")"
     nvim --server "$socket" --remote-send "<ESC>${LINE}gg"
-
-    focus_nvim
 }
 
 main
