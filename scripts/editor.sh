@@ -7,13 +7,39 @@
 FILENAME=$1
 LINE=${2:-0}
 
+ORIGIN_PANE_OPTION="@neolazygit-origin-pane"
+
+get_session_id() {
+    if [ -n "$LAZYGIT_SESSION_ID" ]; then
+        printf '%s\n' "$LAZYGIT_SESSION_ID"
+        return
+    fi
+
+    tmux display-message -p "#{session_id}"
+}
+
+get_origin_pane() {
+    local session_id
+    session_id="$(get_session_id)"
+
+    tmux show-options -t "$session_id" -qv "$ORIGIN_PANE_OPTION"
+}
+
 # Check if there's a nvim instance in the origin pane and 'returns' its server socket,
 # otherwise returns 0
 get_nvim_socket () {
-    local pid_of_origin=$(tmux list-panes -sF "#{pane_pid}" \
-                            -f "#{m:#{pane_id},${LAZYGIT_ORIGIN_PANE}}")
+    local origin_pane
+    origin_pane="$(get_origin_pane)"
 
-    if [ -z $pid_of_origin ]; then
+    if [ -z "$origin_pane" ]; then
+        echo 0
+        return
+    fi
+
+    local pid_of_origin=$(tmux list-panes -sF "#{pane_pid}" \
+                            -f "#{m:#{pane_id},${origin_pane}}")
+
+    if [ -z "$pid_of_origin" ]; then
         echo 0
         return
     fi
@@ -38,10 +64,22 @@ get_nvim_socket () {
 }
 
 focus_nvim() {
-    local origin_window=$(tmux list-panes -sF "#I" -f "#{m:#D,${LAZYGIT_ORIGIN_PANE}}")
+    local origin_pane
+    origin_pane="$(get_origin_pane)"
 
-    tmux selectw -t $origin_window
-    tmux selectp -t $LAZYGIT_ORIGIN_PANE
+    if [ -z "$origin_pane" ]; then
+        return
+    fi
+
+    local origin_window
+    origin_window="$(tmux list-panes -sF "#I" -f "#{m:#D,${origin_pane}}")"
+
+    if [ -z "$origin_window" ]; then
+        return
+    fi
+
+    tmux selectw -t "$origin_window"
+    tmux selectp -t "$origin_pane"
 }
 
 

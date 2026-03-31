@@ -41,6 +41,13 @@ $ tmux source-file <tmux.conf-path>
 
 ## Configuration options
 
+## Behavior
+
+Opening lazygit reuses a single lazygit window per tmux session. If that window
+already exists, the plugin focuses it instead of creating a new one. The window
+is also retargeted to the pane that most recently opened it, so editor actions
+from lazygit still jump back to the correct pane.
+
 ### `@open-lazygit`
 
 **Default: G (shift+g)**
